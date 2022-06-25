@@ -1,8 +1,8 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
-use druid::*;
-use druid::widget::*;
 use druid::im::vector;
+use druid::widget::*;
+use druid::*;
 
 mod iwidget;
 use iwidget::*;
@@ -13,11 +13,10 @@ use nav::*;
 mod l10n;
 use l10n::*;
 
-
 #[derive(Debug, Default, Clone, Data, Lens)]
 pub struct AppState {
-    tab: TabId,
-    bases: im::Vector<iwidget::CardItemBase>,
+    pub tab: TabId,
+    pub bases: im::Vector<iwidget::CardItem>,
 }
 
 pub fn main() -> Result<(), PlatformError> {
@@ -33,18 +32,33 @@ pub fn main() -> Result<(), PlatformError> {
             env.set(L10N, Arc::new(l10n));
         })
         .launch(AppState {
-            bases: vector![CardItemBase::default()],
+            bases: vector![CardItem::new()],
             ..Default::default()
         })
 }
 
 fn ui_builder() -> impl Widget<AppState> {
-    Flex::row().with_child(nav()).with_flex_child(
-        Flex::column()
-            .with_flex_child(body(), 1.)
-            .with_child(bottom()),
-        1.0,
-    )
+    Flex::row()
+        .with_child(
+            Flex::column()
+                .with_flex_child(nav(), 1.)
+                .with_child(
+                    Button::from_label(
+                        Label::dynamic(|_data, env| env.get(L10N).get("footer-button-exit"))
+                            .with_text_size(28.)
+                    )
+                    .padding(5.0)
+                )
+                .cross_axis_alignment(CrossAxisAlignment::Fill)
+
+                .background(Color::rgb8(53, 53, 53))
+        )
+                // .with_child(
+                //     Button::from_label(
+                //         Label::dynamic(|_data, env| env.get(L10N).get("footer-button-exit"))
+                //         .with_text_size(28.))
+                // )
+        .with_flex_child(body(), 1.)
 }
 
 fn btn<T: Data>(text_key: &'static str) -> impl Widget<T> {

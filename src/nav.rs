@@ -37,7 +37,6 @@ pub fn nav() -> impl Widget<AppState> {
     )
     .fix_width(200.)
     .expand_height()
-    .background(Color::rgb8(53, 53, 53))
     .controller(NavController)
 }
 
@@ -120,13 +119,14 @@ impl<W: Widget<NavItemState>> Controller<NavItemState, W> for NavControllerItem 
         env: &Env,
     ) {
         match event {
-            Event::MouseMove(_) if !self.is_hover => {
-                ctx.override_cursor(&Cursor::Pointer);
-                data.is_hover = true;
-            }
-            Event::Internal(InternalEvent::MouseLeave) => {
-                ctx.clear_cursor();
-                self.is_hover = false;
+            Event::Command(cmd) if cmd.is(HOT_CHANGED) => {
+                self.is_hover = *cmd.get(HOT_CHANGED).unwrap();
+                if self.is_hover {
+                    ctx.override_cursor(&Cursor::Pointer);
+                } else {
+                    ctx.clear_cursor();
+                }
+                ctx.set_handled();
             }
             Event::MouseUp(_) => ctx.submit_notification(NAV_CLICKED.with(data.this)),
             _ => (),
@@ -143,18 +143,17 @@ impl<W: Widget<NavItemState>> Controller<NavItemState, W> for NavControllerItem 
         data: &NavItemState,
         env: &Env,
     ) {
+        match event {
+            LifeCycle::HotChanged(e) => {
+                ctx.submit_command(HOT_CHANGED.with(*e).to(Target::Widget(ctx.widget_id())));
+            },
+            _ => ()
+        }
         child.lifecycle(ctx, event, data, env)
     }
 
-    fn update(
-        &mut self,
-        child: &mut W,
-        ctx: &mut UpdateCtx,
-        old_data: &NavItemState,
-        data: &NavItemState,
-        env: &Env,
-    ) {
-        child.update(ctx, old_data, data, env);
+    fn update(&mut self, child: &mut W, ctx: &mut UpdateCtx, old_data: &NavItemState, data: &NavItemState, env: &Env) {
+        child.update(ctx, old_data, data, env)
     }
 }
 
