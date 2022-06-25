@@ -2,7 +2,7 @@ use crate::iwidget::HOT_CHANGED;
 
 use super::*;
 use druid::{
-    lens::Constant, text::RichTextBuilder, FileDialogOptions, FileInfo, Insets, LifeCycle, Target,
+    lens::Constant, text::RichTextBuilder, FileDialogOptions, FileInfo, Insets, LifeCycle, Target
 };
 
 use std::{
@@ -13,35 +13,33 @@ use std::{
 pub(super) const TAB_KEY: TabId = TabId::Main;
 
 pub(super) fn template() -> impl Widget<AppState> {
-    Either::new(
-        |data: &AppState, _| data.cards.is_empty(),
-        {
-            let mut builder = RichTextBuilder::new();
-            builder
-                .push("Добавьте")
-                .underline(true)
-                .text_color(Color::rgb8(50, 50, 160))
-                .link(ADD_NEW_CARD);
-            builder.push(" карточку запуска");
-
-            let text = RawLabel::new()
-                .with_text_size(40.)
-                .with_text_color(Color::GRAY)
-                .with_line_break_mode(LineBreaking::WordWrap)
-                .lens(Constant(builder.build()))
-                .controller(EmptyCardsController);
-
-            Flex::column()
-                .with_child(text)
-                .cross_axis_alignment(CrossAxisAlignment::Center)
-                .main_axis_alignment(MainAxisAlignment::Center)
-                .expand()
-        },
-        body(),
-    )
+    Either::new(|data: &AppState, _| data.cards.is_empty(), empty_cards(), view_cards())
 }
 
-fn body() -> impl Widget<AppState> {
+fn empty_cards() -> impl Widget<AppState> {
+    let mut builder = RichTextBuilder::new();
+    builder
+        .push("Добавьте")
+        .underline(true)
+        .text_color(Color::rgb8(50, 50, 160))
+        .link(ADD_NEW_CARD);
+    builder.push(" карточку запуска");
+
+    let text = RawLabel::new()
+        .with_text_size(40.)
+        .with_text_color(Color::GRAY)
+        .with_line_break_mode(LineBreaking::WordWrap)
+        .lens(Constant(builder.build()))
+        .controller(EmptyCardsController);
+
+    Flex::column()
+        .with_child(text)
+        .cross_axis_alignment(CrossAxisAlignment::Center)
+        .main_axis_alignment(MainAxisAlignment::Center)
+        .expand()
+}
+
+fn view_cards() -> impl Widget<AppState> {
     Flex::column()
         .with_flex_child(
             Scroll::new(
@@ -263,10 +261,14 @@ fn item_read() -> impl Widget<CardItem> {
     )
     .fix_height(ROW_HEIGHT);
 
+    // let paint = Painter::new(|ctx, data: &CardItem, env| {
+    //     let rect = ctx.region().bounding_box();
+    // });
+
     Flex::row()
         .with_child(
             Flex::column()
-                .with_child(Button::new("P").fix_size(ROW_HEIGHT * 2. - 8., ROW_HEIGHT * 2. - 8.)),
+                .with_child(Button::from_label(Label::new("▷").with_text_size(32.)).fix_size(ROW_HEIGHT * 2. - 8., ROW_HEIGHT * 2. - 8.)),
         )
         .with_spacer(10.)
         .with_flex_child(
@@ -281,7 +283,6 @@ fn item_read() -> impl Widget<CardItem> {
             1.,
         )
         .controller(CardItemController::default())
-    // .debug_paint_layout()
 }
 
 struct ListCardItemsController;
