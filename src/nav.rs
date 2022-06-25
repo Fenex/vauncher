@@ -18,7 +18,7 @@ pub fn nav() -> impl Widget<AppState> {
     Container::new(
         Flex::column()
             .with_child(
-                link("nav-title-main")
+                link("Карточки")
                     .controller(NavControllerItem::default())
                     .lens(AppState2NavItemState { this: TabId::Main }),
             )
@@ -146,13 +146,20 @@ impl<W: Widget<NavItemState>> Controller<NavItemState, W> for NavControllerItem 
         match event {
             LifeCycle::HotChanged(e) => {
                 ctx.submit_command(HOT_CHANGED.with(*e).to(Target::Widget(ctx.widget_id())));
-            },
-            _ => ()
+            }
+            _ => (),
         }
         child.lifecycle(ctx, event, data, env)
     }
 
-    fn update(&mut self, child: &mut W, ctx: &mut UpdateCtx, old_data: &NavItemState, data: &NavItemState, env: &Env) {
+    fn update(
+        &mut self,
+        child: &mut W,
+        ctx: &mut UpdateCtx,
+        old_data: &NavItemState,
+        data: &NavItemState,
+        env: &Env,
+    ) {
         child.update(ctx, old_data, data, env)
     }
 }

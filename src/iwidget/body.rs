@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use druid::{widget::*, Data, Env, Event, Lens, LensExt, Selector, Widget};
+use druid::{widget::*, Color, Command, Data, Env, Event, Lens, LensExt, Selector, Widget};
 
 mod about;
 mod main;
@@ -39,7 +39,37 @@ pub struct CardItem {
     pub id: u32,
     pub record: CardItemRecord,
     pub edit: Option<CardItemRecord>,
-    is_hover: bool
+    is_hover: bool,
+}
+
+impl CardItem {
+    pub fn new() -> Self {
+        let ts = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_else(|r| r.duration())
+            .as_millis() as u32;
+
+        Self {
+            id: ts,
+            record: Default::default(),
+            edit: Default::default(),
+            is_hover: false,
+        }
+    }
+
+    pub fn make_edit(&mut self) {
+        self.edit = Some(self.record.clone());
+    }
+
+    pub fn with_edit(mut self) -> Self {
+        self.make_edit();
+        self
+    }
+
+    pub fn with_name(mut self, name: String) -> Self {
+        self.record.name = name;
+        self
+    }
 }
 
 pub struct CardItemRead;
@@ -63,27 +93,6 @@ impl Lens<CardItem, CardItemRecord> for CardItemEdit {
 
     fn with_mut<V, F: FnOnce(&mut CardItemRecord) -> V>(&self, data: &mut CardItem, f: F) -> V {
         f(data.edit.as_mut().unwrap())
-    }
-}
-
-impl CardItem {
-    pub fn new() -> Self {
-        let ts = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap_or_else(|r| r.duration())
-            .as_millis() as u32;
-
-        Self {
-            id: ts,
-            record: Default::default(),
-            edit: Default::default(),
-            is_hover: false
-        }
-    }
-
-    pub fn with_name(mut self, name: String) -> Self {
-        self.record.name = name;
-        self
     }
 }
 

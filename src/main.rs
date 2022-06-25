@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use druid::im::vector;
 use druid::widget::*;
@@ -16,13 +16,11 @@ use l10n::*;
 #[derive(Debug, Default, Clone, Data, Lens)]
 pub struct AppState {
     pub tab: TabId,
-    pub bases: im::Vector<iwidget::CardItem>,
+    pub cards: im::Vector<iwidget::CardItem>,
 }
 
 pub fn main() -> Result<(), PlatformError> {
-    let main_window = WindowDesc::new(
-        ui_builder(), // .debug_paint_layout()
-    );
+    let main_window = WindowDesc::new(ui_builder());
 
     AppLauncher::with_window(main_window)
         .log_to_console()
@@ -32,7 +30,7 @@ pub fn main() -> Result<(), PlatformError> {
             env.set(L10N, Arc::new(l10n));
         })
         .launch(AppState {
-            bases: vector![CardItem::new()],
+            cards: vector![],
             ..Default::default()
         })
 }
@@ -45,35 +43,13 @@ fn ui_builder() -> impl Widget<AppState> {
                 .with_child(
                     Button::from_label(
                         Label::dynamic(|_data, env| env.get(L10N).get("footer-button-exit"))
-                            .with_text_size(28.)
+                            .with_text_size(28.),
                     )
-                    .padding(5.0)
+                    .on_click(|_, _, _| Application::global().quit())
+                    .padding(5.0),
                 )
                 .cross_axis_alignment(CrossAxisAlignment::Fill)
-
-                .background(Color::rgb8(53, 53, 53))
+                .background(Color::rgb8(53, 53, 53)),
         )
-                // .with_child(
-                //     Button::from_label(
-                //         Label::dynamic(|_data, env| env.get(L10N).get("footer-button-exit"))
-                //         .with_text_size(28.))
-                // )
         .with_flex_child(body(), 1.)
-}
-
-fn btn<T: Data>(text_key: &'static str) -> impl Widget<T> {
-    Button::from_label(Label::dynamic(|_data, env| env.get(L10N).get(text_key)).with_text_size(28.))
-        .fix_width(200.)
-}
-
-fn bottom<T: Data>() -> impl Widget<T> {
-    Container::new(
-        Align::right(
-            Flex::row()
-                .with_child(btn("footer-button-play"))
-                .with_spacer(15.)
-                .with_child(btn("footer-button-exit")),
-        )
-        .padding(10.),
-    )
 }
