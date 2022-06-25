@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use std::time::SystemTime;
 
 use druid::{widget::*, Data, Env, Event, Lens, LensExt, Selector, Widget};
@@ -28,30 +27,6 @@ pub fn body() -> impl Widget<AppState> {
     .expand()
 }
 
-// #[derive(Debug, Clone, Data, Lens)]
-// pub struct CardItemBase {
-//     id: u32,
-//     name: String,
-//     path_bin: String,
-//     path_resources: String,
-// }
-
-// impl Default for CardItemBase {
-//     fn default() -> Self {
-//         let ts = SystemTime::now()
-//             .duration_since(SystemTime::UNIX_EPOCH)
-//             .unwrap_or_else(|r| r.duration())
-//             .as_millis() as u32;
-
-//         Self {
-//             id: ts,
-//             name: Default::default(),
-//             path_bin: Default::default(),
-//             path_resources: Default::default()
-//         }
-//     }
-// }
-
 #[derive(Debug, Default, Clone, Data, Lens)]
 pub struct CardItemRecord {
     pub name: String,
@@ -66,12 +41,6 @@ pub struct CardItem {
     pub edit: Option<CardItemRecord>,
     is_hover: bool
 }
-
-// impl Data for CardItem {
-//     fn same(&self, other: &Self) -> bool {
-//         self.id == other.id && self.record.same(&other.record) && self.edit.is_none() == other.edit.is_none()
-//     }
-// }
 
 pub struct CardItemRead;
 
