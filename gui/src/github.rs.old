@@ -1,0 +1,37 @@
+pub struct Github<'a> {
+    user: &'a str,
+    repo: &'a str
+}
+
+impl<'a> Github<'a> {
+    pub fn new(user: &'a str, repo: &'a str) -> Self {
+        Self { user, repo }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use octocrab;
+    use tokio::runtime;
+    #[test]
+    fn ch() {
+        let octocrab = octocrab::instance();
+
+        let repos = octocrab.repos("vangers-app", "vss-fullscreen-game");
+        let repos = repos.releases();
+        let repos = repos.list();
+
+        let rt = runtime::Builder::new_current_thread()
+            .enable_all()
+            .on_thread_stop(|| println!("Tokio Runtime stopped"))
+            .worker_threads(1)
+            .build().unwrap();
+
+        let rs = rt.block_on(repos.send()).unwrap();
+
+        for (i, release) in rs.into_iter().enumerate() {
+            release.tag_name
+            dbg!(i, release);
+        }
+    }
+}

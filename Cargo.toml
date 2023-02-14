@@ -1,9 +1,10 @@
-[package]
-name = "vauncher"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = [
+    "core",
+    "gui"
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-druid = { git = "https://github.com/linebender/druid/", rev = "afbe73b92e7f54a8c9e0800a1c440252b80ae0ba", features = ["im", "png"] }
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1

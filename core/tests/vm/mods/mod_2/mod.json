@@ -1,0 +1,10 @@
+{
+    "type": "github",
+    "id": {
+        "owner": "vangers-app",
+        "repo": "vss-fullscreen-game"
+    },
+    "version": "1.0.0",
+    "fixed": false,
+    "disabled": false
+}

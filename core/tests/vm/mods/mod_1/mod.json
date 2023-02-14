@@ -1,0 +1,9 @@
+{
+    "type": "github",
+    "id": {
+        "owner": "vangers-app",
+        "repo": "vss-new-models"
+    },
+    "fixed": null,
+    "disabled": false
+}
